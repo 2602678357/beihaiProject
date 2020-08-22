@@ -1,5 +1,6 @@
 <template>
-  <!--<div class="hello">
+  <div class="hello">
+    <nav-menu></nav-menu>
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
     <ul>
@@ -80,15 +81,14 @@
         </a>
       </li>
     </ul>
-  </div>  -->
-  <div>
-  </div>
-
+</div>
 </template>
 
 <script>
+import NavMenu from './common/NavMenu'
 export default {
   name: 'HelloWorld',
+  components: {NavMenu},
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'

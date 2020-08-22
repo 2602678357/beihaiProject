@@ -59,6 +59,7 @@ export default {
     login (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          console.log(this.$store.state)
           this.$axios
             .post('/login', {
               username: this.loginForm.username,
@@ -67,8 +68,9 @@ export default {
             .then(_code => {
               console.log(_code)
               if (_code.data.code === 200) {
-                console.log('成功')
-                this.$router.replace({path: '/index'})
+                this.$store.commit('login', this.loginForm)
+                var path = this.$route.query.redirect
+                this.$router.replace({path: path === '/' || path === undefined ? '/index' : path})
               } else {
                 alert('用户名或密码错误')
               }
