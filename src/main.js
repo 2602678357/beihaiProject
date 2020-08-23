@@ -13,6 +13,7 @@ var debounce = require('lodash.debounce')
 axios.defaults.baseURL = 'http://localhost:8090/api'
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
+Vue.config.devtools = true
 Vue.use(ElementUI)
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {

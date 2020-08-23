@@ -4,12 +4,13 @@
      default-active="0"
      active-text-color="red">
          <el-menu-item v-for="(item,i) in menuList" :key="i" :index="item.id">
-                        {{ item.name }}
+                          <p @click="change(item.id)">{{ item.name }}</p>
  </el-menu-item>
      </el-menu>
   </template>
 <script>
-export default{
+export default {
+  inject: ['reload'],
   name: 'SideMenu',
   data () {
     return {
@@ -25,6 +26,15 @@ export default{
           this.menuList = body.data.data.list
         }
       })
+    },
+    change: function (id) {
+      this.$router.push({
+        path: '/library',
+        query: {
+          cid: id
+        }
+      })
+      this.reload()
     }
   },
   created () {
