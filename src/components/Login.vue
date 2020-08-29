@@ -24,7 +24,7 @@
     </el-form-item>
     <el-form-item style="width: 100%;">
       <el-button type="submit" style="width:40%;background:#505458;border:none"
-                 @click="login('loginForm')">登录</el-button>
+                 @click="login()">登录</el-button>
       <el-button type="primary" style="width:40%;background:#505458;border:none"
                  @click="register('loginForm')">注册</el-button>
     </el-form-item>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { isvalidPass, isvaildPhone, isvalidEmail } from '@/validate.js'
+import { isvaildPhone, isvalidEmail } from '@/validate.js'
 // import $ from 'jquery'
 export default {
   inject: ['reload'],
@@ -42,8 +42,8 @@ export default {
     var validatePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
-      } else if (!isvalidPass(value)) {
-        callback(new Error('密码以字母开头 长度在8~18之间 只能包含字母、数字和下划线'))
+      // } else if (!isvalidPass(value)) {
+      //   callback(new Error('密码以字母开头 长度在8~18之间 只能包含字母、数字和下划线'))
       } else {
         callback()
       }

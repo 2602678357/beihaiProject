@@ -25,11 +25,13 @@ export default {
       // alert(cid)
       // localStorage.setItem('cid', cid)
       // this.$refs.Books.queryList(cid)
+      alert(this.$refs.SideMenu.cid)
       var that = this
       var cid = this.$refs.SideMenu.cid
-      var url = 'categories/' + cid + '/books'
+      var url = 'categories/' + cid
       this.$axios.get(url).then(resp => {
         if (resp && resp.status === 200) {
+          console.log(resp)
           that.$refs.booksArea.books = resp.data
         }
       }

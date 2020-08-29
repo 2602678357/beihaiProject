@@ -36,13 +36,15 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '退出成功!'
-        })
         localStorage.removeItem('user')
         // 跳转登录页面(编程式导航)
-        this.$router.replace('/login')
+        this.$axios.post('/loginout', {
+        }).then(_code => {
+          console.log(_code)
+          if ((_code.data.code === 200)) {
+            this.$router.push('login')
+          }
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
