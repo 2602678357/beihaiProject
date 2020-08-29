@@ -2,10 +2,10 @@
  <el-container>
  <el-aside style="width: 200px;margin-top: 20px">
  <switch></switch>
- <SideMenu></SideMenu>
+ <SideMenu @indexSelect="listByMenu" ref="SideMenu"></SideMenu>
  </el-aside>
  <el-main>
-   <books class="books-area"></books>
+   <books class="books-area" ref="booksArea"></books>
  </el-main>
  </el-container>
 </template>
@@ -20,6 +20,21 @@ export default {
   },
   components: {SideMenu, Books},
   methods: {
+    listByMenu () {
+      // var cid = this.$refs.SideMenu.cid
+      // alert(cid)
+      // localStorage.setItem('cid', cid)
+      // this.$refs.Books.queryList(cid)
+      var that = this
+      var cid = this.$refs.SideMenu.cid
+      var url = 'categories/' + cid + '/books'
+      this.$axios.get(url).then(resp => {
+        if (resp && resp.status === 200) {
+          that.$refs.booksArea.books = resp.data
+        }
+      }
+      )
+    }
   }
 }
 </script>

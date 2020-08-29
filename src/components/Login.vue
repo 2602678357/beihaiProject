@@ -1,7 +1,7 @@
 <template>
   <body id="poster">
   <el-form class="login-container" status-icon :rules="rules2" :model="loginForm" ref="loginForm" label-position="left" label-width="0px">
-    <h3 class="login_title">系统登录</h3>
+    <h3 class="login_title" id="title" ref="title"> 系统登录</h3>
     <el-form-item prop="username">
       <el-input type="text"  v-model="loginForm.username" autocomplete="off"
                 placeholder="账号"></el-input>
@@ -10,17 +10,33 @@
       <el-input type="password" v-model="loginForm.password" autocomplete="off"
                 placeholder="密码"></el-input>
     </el-form-item>
-    <el-form-item style="width: 100%">
-      <el-button type="primary" style="width:100%;background:#505458;border:none"
+    <el-form-item prop="email">
+      <el-input type="email" v-show="hiddenemail" v-model="loginForm.email" autocomplete="off"
+                placeholder="邮箱"></el-input>
+    </el-form-item>
+    <el-form-item prop="phone">
+      <el-input type="phone" v-show="hiddenphone" v-model="loginForm.phone" autocomplete="off"
+                placeholder="电话"></el-input>
+    </el-form-item>
+    <el-form-item prop="name">
+      <el-input type="name" v-show="hiddenname" v-model="loginForm.name" autocomplete="off"
+                placeholder="真实姓名"></el-input>
+    </el-form-item>
+    <el-form-item style="width: 100%;">
+      <el-button type="submit" style="width:40%;background:#505458;border:none"
                  @click="login('loginForm')">登录</el-button>
+      <el-button type="primary" style="width:40%;background:#505458;border:none"
+                 @click="register('loginForm')">注册</el-button>
     </el-form-item>
     </el-form>
   </body>
 </template>
 
 <script>
-import { isvalidPass } from '@/validate.js'
+import { isvalidPass, isvaildPhone, isvalidEmail } from '@/validate.js'
+// import $ from 'jquery'
 export default {
+  inject: ['reload'],
   name: 'Login',
   data () {
     var validatePass = (rule, value, callback) => {
@@ -39,38 +55,83 @@ export default {
         callback()
       }
     }
+    var validatePhone = (rule, value, callback) => {
+      if (value === '') {
+        // callback(new Error('请输入手机号'))
+      } else if (!isvaildPhone(value)) {
+        callback(new Error('手机号输入不合法'))
+      } else {
+        callback()
+      }
+    }
+    var validateEmail = (rule, value, callback) => {
+      if (value === '') {
+        // callback(new Error('请输入邮箱'))
+      } else if (!isvalidEmail(value)) {
+        callback(new Error('邮箱输入不合法'))
+      } else {
+        callback()
+      }
+    }
+    var validatename = (rule, value, callback) => {
+      if (value === '') {
+        // callback(new Error('真实姓名'))
+      } else {
+        callback()
+      }
+    }
     return {
       loginForm: {
         username: '',
-        password: ''
+        password: '',
+        email: '',
+        phone: '',
+        name: ''
       },
+      hiddenemail: false,
+      hiddenphone: false,
+      hiddenname: false,
       rules2: {
         password: [
           { required: true, validator: validatePass, trigger: 'blur' }
         ],
         username: [
           { required: true, validator: validateUserName, trigger: 'blur' }
+        ],
+        phone: [
+          { required: true, validator: validatePhone, trigger: 'blur' }
+        ],
+        email: [
+          { required: true, validator: validateEmail, trigger: 'blur' }
+        ],
+        name: [
+          { required: true, validator: validatename, trigger: 'blur' }
         ]
       },
       responseResult: []
     }
   },
   methods: {
-    login (formName) {
+    register (formName) {
+      this.$refs.title.innerHTML = '用户注册'
+      this.hiddenemail = true
+      this.hiddenphone = true
+      this.hiddenname = true
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.$store.state)
           this.$axios
-            .post('/login', {
+            .post('/addUser', {
               username: this.loginForm.username,
-              password: this.loginForm.password
+              password: this.loginForm.password,
+              email: this.loginForm.email,
+              phone: this.loginForm.phone,
+              name: this.loginForm.name
             })
             .then(_code => {
               console.log(_code)
               if (_code.data.code === 200) {
-                this.$store.commit('login', this.loginForm)
-                var path = this.$route.query.redirect
-                this.$router.replace({path: path === '/' || path === undefined ? '/index' : path})
+                alert('注册成功')
+                this.reload()
               } else {
                 alert('用户名或密码错误')
               }
@@ -81,6 +142,26 @@ export default {
           console.log('error submit!!')
           return false
         }
+      })
+    },
+    //  this.$store.commit('login', this.loginForm)
+    //  var path = this.$route.query.redirect
+    //  this.$router.replace({path: path === '/' || path === undefined ? '/index' : path})
+    login () {
+      this.$refs.title.innerHTML = '用户登录'
+      this.hiddenemail = false
+      this.hiddenname = false
+      this.hiddenphone = false
+      this.$axios.post('/login', {
+        username: this.loginForm.username,
+        password: this.loginForm.password
+      }).then(_code => {
+        console.log(_code)
+        alert('登录成功')
+        this.$store.commit('login', this.loginForm)
+        var path = this.$route.query.redirect
+        this.$router.replace({path: path === '/' || path === undefined ? '/index' : path})
+      }).catch(failResponse => {
       })
     }
   }

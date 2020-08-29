@@ -2,39 +2,37 @@
      <el-menu
      class="categories"
      default-active="0"
+     @select="handleSelect"
      active-text-color="red">
-         <el-menu-item v-for="(item,i) in menuList" :key="i" :index="item.id">
-                          <p @click="change(item.id)">{{ item.name }}</p>
+         <el-menu-item v-for="(item,i) in menuList" :key="i" :index="item.id.toString()">
+                          <!-- <p @click="change(item.id)">{{ item.name }}</p> -->
+                          <p>{{ item.name }}</p>
  </el-menu-item>
      </el-menu>
   </template>
 <script>
 export default {
-  inject: ['reload'],
   name: 'SideMenu',
   data () {
     return {
       activeIndex: '1',
-      menuList: []
+      menuList: [],
+      cid: ''
     }
   },
   methods: {
+    handleSelect (key, keyPath) {
+      this.cid = key
+      this.$emit('indexSelect')
+    },
     queryList () {
+      var that = this
       this.$axios.get('/menu').then((body) => {
         console.log(body.data)
         if (body.data.success === true) {
-          this.menuList = body.data.data.list
+          that.menuList = body.data.data.list
         }
       })
-    },
-    change: function (id) {
-      this.$router.push({
-        path: '/library',
-        query: {
-          cid: id
-        }
-      })
-      this.reload()
     }
   },
   created () {
@@ -45,7 +43,7 @@ export default {
 <style scoped>
  .categories {
  position: fixed;
- margin-left: 50%;
+ margin-left: 45%;
  left: -600px;
  top: 100px;
  width: 150px;
