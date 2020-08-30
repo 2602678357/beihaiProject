@@ -15,8 +15,14 @@
                 placeholder="邮箱"></el-input>
     </el-form-item>
     <el-form-item prop="phone">
-      <el-input type="phone" v-show="hiddenphone" v-model="loginForm.phone" autocomplete="off"
+      <el-input type="phone" style="width:75%" v-show="hiddenphone" v-model="loginForm.phone" autocomplete="off"
                 placeholder="电话"></el-input>
+      <el-button type="primary" v-show="hiddenyanzheng" style="width:23%;background:#6495ED;border:none;text-align:center;"
+                 @click="sendSms()">验证码</el-button>
+    </el-form-item>
+    <el-form-item prop="verifyCode">
+      <el-input type="verifyCode" v-show="hiddenverifyCode" v-model="loginForm.verifyCode" autocomplete="off"
+                placeholder="验证码" @blur="testVerifyCode()"></el-input>
     </el-form-item>
     <el-form-item prop="name">
       <el-input type="name" v-show="hiddenname" v-model="loginForm.name" autocomplete="off"
@@ -33,7 +39,7 @@
 </template>
 
 <script>
-import { isvaildPhone, isvalidEmail } from '@/validate.js'
+import { isvaildVerifyCode, isvaildPhone, isvalidEmail } from '@/validate.js'
 // import $ from 'jquery'
 export default {
   inject: ['reload'],
@@ -80,17 +86,27 @@ export default {
         callback()
       }
     }
+    var vaildVerifyCode = (rule, value, callback) => {
+      if (!isvaildVerifyCode(value)) {
+        callback(new Error('验证码不能为空且不合法'))
+      } else {
+        callback()
+      }
+    }
     return {
       loginForm: {
         username: '',
         password: '',
         email: '',
         phone: '',
-        name: ''
+        name: '',
+        verifyCode: ''
       },
       hiddenemail: false,
       hiddenphone: false,
       hiddenname: false,
+      hiddenyanzheng: false,
+      hiddenverifyCode: false,
       rules2: {
         password: [
           { required: true, validator: validatePass, trigger: 'blur' }
@@ -106,6 +122,9 @@ export default {
         ],
         name: [
           { required: true, validator: validatename, trigger: 'blur' }
+        ],
+        verifyCode: [
+          { required: true, validator: vaildVerifyCode, trigger: 'blur' }
         ]
       },
       responseResult: []
@@ -117,6 +136,8 @@ export default {
       this.hiddenemail = true
       this.hiddenphone = true
       this.hiddenname = true
+      this.hiddenyanzheng = true
+      this.hiddenverifyCode = true
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$axios
@@ -144,14 +165,33 @@ export default {
         }
       })
     },
-    //  this.$store.commit('login', this.loginForm)
-    //  var path = this.$route.query.redirect
-    //  this.$router.replace({path: path === '/' || path === undefined ? '/index' : path})
+    sendSms () {
+      this.$axios.post('/sms', {
+        phone: this.loginForm.phone
+      }).then(_code => {
+        alert('发送成功')
+        console.log(_code.data.verifyCode)
+        localStorage.setItem('verify', _code.data.verifyCode)
+      }).catch(failResponse => {
+      })
+    },
+    testVerifyCode () {
+      var verifyCode = this.loginForm.verifyCode
+      var verify = localStorage.getItem('verify')
+      if (verifyCode === verify) {
+        alert('验证成功')
+        localStorage.removeItem('verify')
+      } else {
+        alert('验证失败')
+      }
+    },
     login () {
       this.$refs.title.innerHTML = '用户登录'
       this.hiddenemail = false
       this.hiddenname = false
       this.hiddenphone = false
+      this.hiddenyanzheng = false
+      this.hiddenverifyCode = false
       this.$axios.post('/login', {
         username: this.loginForm.username,
         password: this.loginForm.password

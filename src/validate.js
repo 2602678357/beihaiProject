@@ -10,3 +10,7 @@ export function isvalidEmail (str) {
   const reg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/
   return reg.test(str)
 }
+export function isvaildVerifyCode (str) {
+  const reg = /^\d{6}$/
+  return reg.test(str)
+}

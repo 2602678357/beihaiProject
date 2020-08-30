@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+// import HelloWorld from '@/components/HelloWorld'
 import AppIndex from '@/components/AppIndex'
 import Login from '@/components/Login'
 import Table from '@/components/Table'
@@ -13,8 +13,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      name: 'index',
+      component: AppIndex,
+      meta: {
+        requireAuth: true
+      }
     },
     {
       path: '/home',
